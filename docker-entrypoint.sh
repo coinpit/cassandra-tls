@@ -1,7 +1,6 @@
 #!/bin/bash
 set -o xtrace
 set -e
-ls -l /bin/su
 
 # first arg is `-f` or `--some-option`
 if [ "${1:0:1}" = '-' ]; then
@@ -11,7 +10,7 @@ fi
 # allow the container to be started with `--user`
 if [ "$1" = 'cassandra' -a "$(id -u)" = '0' ]; then
 	chown -R cassandra /var/lib/cassandra "$CASSANDRA_CONFIG"
-	exec gosu cassandra:cassandra "$BASH_SOURCE" "$@"
+	exec gosu 999:999 "$BASH_SOURCE" "$@"
 fi
 
 if [ "$1" = 'cassandra' ]; then
