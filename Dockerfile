@@ -11,7 +11,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates
 	&& wget -O /usr/local/bin/gosu.asc "https://github.com/tianon/gosu/releases/download/1.2/gosu-$(dpkg --print-architecture).asc" \
 	&& gpg --verify /usr/local/bin/gosu.asc \
 	&& rm /usr/local/bin/gosu.asc \
-	&& chmod +x /usr/local/bin/gosu \
+	&& chown root:users /usr/local/bin/gosu \
+	&& chmod +xs /usr/local/bin/gosu \
 	&& apt-get purge -y --auto-remove ca-certificates wget
 
 RUN apt-key adv --keyserver ha.pool.sks-keyservers.net --recv-keys 514A2AD631A57A16DD0047EC749D6EEC0353B12C

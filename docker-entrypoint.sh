@@ -10,7 +10,7 @@ fi
 # allow the container to be started with `--user`
 if [ "$1" = 'cassandra' -a "$(id -u)" = '0' ]; then
 	chown -R cassandra /var/lib/cassandra "$CASSANDRA_CONFIG"
-	exec gosu 999:999 "$BASH_SOURCE" "$@"
+	exec gosu cassandra "$BASH_SOURCE" "$@"
 fi
 
 if [ "$1" = 'cassandra' ]; then
