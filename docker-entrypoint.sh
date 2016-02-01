@@ -1,4 +1,5 @@
 #!/bin/bash
+set -o xtrace
 set -e
 ls -l /bin/su
 
@@ -75,5 +76,5 @@ if [ "$1" = 'cassandra' ]; then
 	fi
 
 fi
-
+set +o xtrace
 exec "$@"
