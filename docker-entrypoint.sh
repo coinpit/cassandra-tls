@@ -10,7 +10,7 @@ fi
 # allow the container to be started with `--user`
 if [ "$1" = 'cassandra' -a "$(id -u)" = '0' ]; then
 	chown -R cassandra /var/lib/cassandra "$CASSANDRA_CONFIG"
-	exec su -c "cassandra $BASH_SOURCE $@ "
+	exec su cassandra -c "$BASH_SOURCE $* "
 fi
 
 if [ "$1" = 'cassandra' ]; then
@@ -60,20 +60,25 @@ if [ "$1" = 'cassandra' ]; then
 		fi
 	done
 
-    if [ -n "$ENABLE_TLS" ]; then
-	    sed -ri 's/internode_encryption: none/internode_encryption: all/' "$CASSANDRA_CONFIG/cassandra.yaml"
-	    sed -ri 's/# protocol: TLS/protocol: TLS/' "$CASSANDRA_CONFIG/cassandra.yaml"
+        sed -ri 's/# protocol: TLS/protocol: TLSv1/' "$CASSANDRA_CONFIG/cassandra.yaml"
 	    sed -ri 's/# algorithm: SunX509/algorithm: SunX509/' "$CASSANDRA_CONFIG/cassandra.yaml"
 	    sed -ri 's/# store_type: JKS/store_type: JKS/' "$CASSANDRA_CONFIG/cassandra.yaml"
 	    sed -ri 's/# cipher_suites:/cipher_suites:/' "$CASSANDRA_CONFIG/cassandra.yaml"
 	    sed -ri 's/# require_client_auth: false/require_client_auth: true/' "$CASSANDRA_CONFIG/cassandra.yaml"
-	    sed -ri 's/enabled: false/enabled: true/' "$CASSANDRA_CONFIG/cassandra.yaml"
 	    sed -ri 's/# truststore_password:/truststore_password:/' "$CASSANDRA_CONFIG/cassandra.yaml"
 	    sed -ri 's/# truststore:/truststore:/' "$CASSANDRA_CONFIG/cassandra.yaml"
 	    sed -ri 's/keystore: conf\/.keystore/keystore: \/etc\/cassandra\/ssl\/.keystore/' "$CASSANDRA_CONFIG/cassandra.yaml"
 	    sed -ri 's/truststore: conf\/.truststore/truststore: \/etc\/cassandra\/ssl\/.truststore/' "$CASSANDRA_CONFIG/cassandra.yaml"
+
+    if [ -n "$ENABLE_INTERNODE_TLS" ]; then
+	    sed -ri 's/internode_encryption: none/internode_encryption: all/' "$CASSANDRA_CONFIG/cassandra.yaml"
 	fi
 
+    if [ -n "$ENABLE_CLIENT_TLS" ]; then
+	    sed -ri 's/enabled: false/enabled: true/' "$CASSANDRA_CONFIG/cassandra.yaml"
+	fi
+
+	cat $CASSANDRA_CONFIG/cassandra.yaml
 fi
 set +o xtrace
 exec "$@"
